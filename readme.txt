@@ -40,3 +40,13 @@ Look at `add_embpicasa_shortcode` on 193-203 lines, feel free to change this as 
 1. Plugin configuration page.
 2. TinyMCE, the plugin's buttons, and the plugin's dialog window.
 3. Result on page.
+
+== Changelog ==
+
+= 1.0.0 =
+* Initial commit.
+
+== Upgrade Notice ==
+
+= 1.0.0 =
+Initial commit.
