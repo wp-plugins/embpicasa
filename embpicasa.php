@@ -178,7 +178,8 @@ function add_embpicasa_shortcode($atts, $content = null) {
 						foreach($results as $photo) {
 							$photos[] = array(
 								'thumbnail' => $photo->mediaGroup->thumbnail[0]->url,
-								'fullsize' => $photo->mediaGroup->content[0]->url
+								'fullsize' => $photo->mediaGroup->content[0]->url,
+								'title' => $photo->mediaGroup->description->text,
 							);
 						}
 					}
@@ -194,8 +195,8 @@ function add_embpicasa_shortcode($atts, $content = null) {
 				
 				foreach($photos as $photo) {
 					$html = $html . '<li>';
-					$html = $html . '<a rel="lightbox[' . $album['id'] . ']" target="_blank" href="' . $photo['fullsize'] . '">';
-					$html = $html . '<img src="' . $photo['thumbnail'] . '" />';
+					$html = $html . '<a title="' . $photo['title'] . '" rel="lightbox[' . $album['id'] . ']" target="_blank" href="' . $photo['fullsize'] . '">';
+					$html = $html . '<img src="' . $photo['thumbnail'] . '" alt="' . $photo['title'] . '" />';
 					$html = $html . '</a>';
 					$html = $html . '</li>';
 					$opts = $opts . '<option value="' . $album['id'] . '">' . $album['name'] . '</option>';

@@ -10,6 +10,9 @@ Allow insert picasa album into posts and pages via short code.
 == Description ==
 
 This plugin add new button to tinymce that allows you insert any of yours albums into post.
+No need in downloading your photos into multiple places.
+Add entire album into your post in few clicks.
+Automatticaly supports by plugins like Lightbox2.
 
 == Installation ==
 
@@ -50,3 +53,6 @@ Look at `add_embpicasa_shortcode` on 193-203 lines, feel free to change this as 
 
 = 1.0.0 =
 Initial commit.
+
+= 1.0.1 =
+Added title to anchor and alt to image.
