@@ -113,7 +113,7 @@ function embpicasa_options_validate($input) {
 		$input['embpicasa_options_thumb_size'] = '150';
 	}
 	
-	$items = array('32', '48', '64', '72', '104', '144', '150', '160');
+	$items = array('94', '110', '128', '200', '220', '288', '320', '400', '512', '576', '640', '720', '800', '912', '1024', '1152', '1280', '1440', '1600');
 	if(!in_array($input['embpicasa_options_full_size'], $items)) {
 		$input['embpicasa_options_full_size'] = '640';
 	}
