@@ -4,7 +4,7 @@ Plugin Name: Embed picasa album
 Plugin URI: http://wordpress.org/
 Description: Embed picasa album into post or page.
 Author: Marchenko Alexandr
-Version: 1.0.2
+Version: 1.0.3
 Author URI: http://mac-blog.org.ua/
 */
 
@@ -45,8 +45,10 @@ function embpicasa_admin_init(){
 	
 	add_settings_section('img_section', 'Image Settings', 'embpicasa_options_section_img', __FILE__);
 	add_settings_field('embpicasa_options_thumb_size', 'Thumbnail size', 'embpicasa_options_thumb_size_field_renderer', __FILE__, 'img_section');
+	add_settings_field('embpicasa_options_thumb_crop', 'Crop thumbnail', 'embpicasa_options_thumb_crop_field_renderer', __FILE__, 'img_section');
 	add_settings_field('embpicasa_options_full_size', 'Full image size', 'embpicasa_options_full_size_field_renderer', __FILE__, 'img_section');
-	add_settings_field('embpicasa_options_crop', 'Crop images', 'embpicasa_options_crop_field_renderer', __FILE__, 'img_section');
+	add_settings_field('embpicasa_options_full_crop', 'Crop full image', 'embpicasa_options_full_crop_field_renderer', __FILE__, 'img_section');
+	add_settings_field('embpicasa_options_single_only', 'Show only on single post', 'embpicasa_options_single_only_field_renderer', __FILE__, 'img_section');
 }
 
 function embpicasa_options_section_auth() {
@@ -89,12 +91,34 @@ function embpicasa_options_full_size_field_renderer() {
 	echo "</select>";
 }
 
-function embpicasa_options_crop_field_renderer() {
+function embpicasa_options_thumb_crop_field_renderer() {
 	$options = get_option('embpicasa_options');
 	$items = array('no', 'yes');
-	echo "<select id='embpicasa_options_crop' name='embpicasa_options[embpicasa_options_crop]'>";
+	echo "<select id='embpicasa_options_thumb_crop' name='embpicasa_options[embpicasa_options_thumb_crop]'>";
 	foreach($items as $item) {
-		$selected = ($options['embpicasa_options_crop']==$item) ? 'selected="selected"' : '';
+		$selected = ($options['embpicasa_options_thumb_crop']==$item) ? 'selected="selected"' : '';
+		echo "<option value='$item' $selected>$item</option>";
+	}
+	echo "</select>";
+}
+
+function embpicasa_options_full_crop_field_renderer() {
+	$options = get_option('embpicasa_options');
+	$items = array('no', 'yes');
+	echo "<select id='embpicasa_options_full_crop' name='embpicasa_options[embpicasa_options_full_crop]'>";
+	foreach($items as $item) {
+		$selected = ($options['embpicasa_options_full_crop']==$item) ? 'selected="selected"' : '';
+		echo "<option value='$item' $selected>$item</option>";
+	}
+	echo "</select>";
+}
+
+function embpicasa_options_single_only_field_renderer() {
+	$options = get_option('embpicasa_options');
+	$items = array('no', 'yes');
+	echo "<select id='embpicasa_options_single_only' name='embpicasa_options[embpicasa_options_single_only]'>";
+	foreach($items as $item) {
+		$selected = ($options['embpicasa_options_single_only']==$item) ? 'selected="selected"' : '';
 		echo "<option value='$item' $selected>$item</option>";
 	}
 	echo "</select>";
@@ -128,8 +152,10 @@ function embpicasa_options_add_defaults() {
 		'embpicasa_options_login' 	   => 'LOGIN@gmail.com',
 		'embpicasa_options_password'   => '',
 		'embpicasa_options_thumb_size' => '150',
+		'embpicasa_options_thumb_crop' => 'yes',
 		'embpicasa_options_full_size'  => '640',
-		'embpicasa_options_crop'       => 'no'
+		'embpicasa_options_full_crop'  => 'no',
+		'embpicasa_options_single_only'=> 'no'
 	));
 }
 
@@ -141,9 +167,13 @@ function embpicasa_options_add_defaults() {
 function add_embpicasa_shortcode($atts, $content = null) {
         extract(shortcode_atts(array( "id" => '' ), $atts));
         
+        // do not display anything if there is no "id"
 		if(empty($id)) return '';
 		
 		$options = get_option('embpicasa_options');
+
+		// do not display anything in loop if "Show only on single post"
+		if(!is_single() && $options['embpicasa_options_single_only'] == 'yes') return '';
 		
 		if(!empty($options['embpicasa_options_login']) && !empty($options['embpicasa_options_password'])) {
 			try {
@@ -169,9 +199,10 @@ function add_embpicasa_shortcode($atts, $content = null) {
 				$query = new Zend_Gdata_Photos_AlbumQuery();
 				$query->setAlbumId($id);
 				// http://code.google.com/intl/ru/apis/picasaweb/docs/1.0/reference.html
-				$suffix = $options['embpicasa_options_crop'] == 'no' ? 'u' : 'c';
-				$query->setThumbsize($options['embpicasa_options_thumb_size'] . $suffix);
-				$query->setImgMax($options['embpicasa_options_full_size'] . $suffix);
+				$thumb_suffix = $options['embpicasa_options_thumb_crop'] == 'no' ? 'u' : 'c';
+				$full_suffix = $options['embpicasa_options_full_crop'] == 'no' ? 'u' : 'c';
+				$query->setThumbsize($options['embpicasa_options_thumb_size'] . $thumb_suffix);
+				$query->setImgMax($options['embpicasa_options_full_size'] . $full_suffix);
 				$results = $service->getAlbumFeed($query);
 				while($results != null) {
 					foreach($results as $entry) {
@@ -189,24 +220,16 @@ function add_embpicasa_shortcode($atts, $content = null) {
 					catch(Exception $e) {$results = null;}
 				}
 				
-				//TODO: here is theming, change it as u need
-				
-				$html = '<ul class="embpicasa">';
-				
-				foreach($photos as $photo) {
-					$html = $html . '<li>';
-					$html = $html . '<a title="' . $photo['title'] . '" rel="lightbox[' . $album['id'] . ']" target="_blank" href="' . $photo['fullsize'] . '">';
-					$html = $html . '<img src="' . $photo['thumbnail'] . '" alt="' . $photo['title'] . '" />';
-					$html = $html . '</a>';
-					$html = $html . '</li>';
-					$opts = $opts . '<option value="' . $album['id'] . '">' . $album['name'] . '</option>';
-				}
-				$html = $html . '</ul>';
-				
-				//$html = $html . '<style type="text/css">';
-				//$html = $html . '.embpicasa li {width:' . $options['embpicasa_options_thumb_size'] . 'px;height:' . $options['embpicasa_options_thumb_size'] . 'px;}';
-				//$html = $html . '</style>';
-				
+
+				$plugin_template = dirname(__FILE__) . '/loop-picasa.php';
+				$theme_template = get_theme_root() . '/' . get_template() . '/loop-picasa.php';
+        		$template_path = file_exists($theme_template) ? $theme_template : $plugin_template;
+
+				ob_start();
+				include $template_path;
+				$html = ob_get_contents();
+				ob_end_clean();
+        		
 				return $html;
 				
 			} catch(Exception $ex) {
@@ -215,10 +238,6 @@ function add_embpicasa_shortcode($atts, $content = null) {
 		} else {
 			return ''; //empty login or password
 		}
-		
-		
-		//TODO: here will be all zend gdata stufs to retrive album photos
-		return '<p style="text-align:center">'.$id.'</p>';
 }
 add_shortcode('embpicasa', 'add_embpicasa_shortcode');
 

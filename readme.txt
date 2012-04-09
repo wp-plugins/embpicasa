@@ -17,6 +17,8 @@ Add entire album into your post in few clicks.
 
 Automatticaly supports by plugins like Lightbox2.
 
+Added template support, if you want custom template just copy `loop-picasa.php` file into your template and modify it as you want.
+
 == Installation ==
 
 ###Installing The Plugin###
