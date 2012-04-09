@@ -33,6 +33,11 @@ Then just visit your admin area and activate the plugin.
 
 To configure this plugin, visit it's settings page. It can be found under the "Settings" tab in your admin area, titled "Picasa".
 
+###Templating###
+
+To make custom template for your gallery just copy `loop-picasa.php` file into your template.
+
+
 == Frequently Asked Questions ==
 
 = How to open images in lightbox =
@@ -41,7 +46,7 @@ Just install something like [lightbox](http://wordpress.org/extend/plugins/light
 
 = How to theme result =
 
-Look at `add_embpicasa_shortcode` on 193-203 lines, feel free to change this as u need.
+Just copy `loop-picasa.php` file into your template.
 
 == Screenshots ==
 
