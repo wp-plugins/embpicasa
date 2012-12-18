@@ -2,7 +2,7 @@
 Contributors: marchenko.alexandr
 Tags: picasa
 Requires at least: 3.3.1
-Tested up to: 3.3.1
+Tested up to: 3.5
 Stable tag: trunk
 
 Allow insert picasa album into posts and pages via short code.
@@ -69,3 +69,6 @@ Added title to anchor and alt to image.
 
 = 1.0.2 =
 Fixed bug with full size options.
+
+= 1.0.4 =
+Fixed bug in wp 3.5.
