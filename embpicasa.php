@@ -38,11 +38,11 @@ function embpicasa_settings_page() {
 add_action('admin_init', 'embpicasa_admin_init' );
 function embpicasa_admin_init(){
 	register_setting('embpicasa_options', 'embpicasa_options', 'embpicasa_options_validate' ); // group, name in db, validation func
-	
+
 	add_settings_section('auth_section', 'Auth Settings', 'embpicasa_options_section_auth', __FILE__);
 	add_settings_field('embpicasa_options_login', 'Login', 'embpicasa_options_login_field_renderer', __FILE__, 'auth_section');
-	add_settings_field('embpicasa_options_password', 'Password', 'embpicasa_options_password_field_renderer', __FILE__, 'auth_section');	
-	
+	add_settings_field('embpicasa_options_password', 'Password', 'embpicasa_options_password_field_renderer', __FILE__, 'auth_section');
+
 	add_settings_section('img_section', 'Image Settings', 'embpicasa_options_section_img', __FILE__);
 	add_settings_field('embpicasa_options_thumb_size', 'Thumbnail size', 'embpicasa_options_thumb_size_field_renderer', __FILE__, 'img_section');
 	add_settings_field('embpicasa_options_thumb_crop', 'Crop thumbnail', 'embpicasa_options_thumb_crop_field_renderer', __FILE__, 'img_section');
@@ -130,18 +130,18 @@ function embpicasa_options_validate($input) {
 	$input['embpicasa_options_password']   =  wp_filter_nohtml_kses($input['embpicasa_options_password']);
 	$input['embpicasa_options_thumb_size'] =  wp_filter_nohtml_kses($input['embpicasa_options_thumb_size']);
 	$input['embpicasa_options_full_size']  =  wp_filter_nohtml_kses($input['embpicasa_options_full_size']);
-	
+
 	// check image dimensions
 	$items = array('32', '48', '64', '72', '104', '144', '150', '160');
 	if(!in_array($input['embpicasa_options_thumb_size'], $items)) {
 		$input['embpicasa_options_thumb_size'] = '150';
 	}
-	
+
 	$items = array('94', '110', '128', '200', '220', '288', '320', '400', '512', '576', '640', '720', '800', '912', '1024', '1152', '1280', '1440', '1600');
 	if(!in_array($input['embpicasa_options_full_size'], $items)) {
 		$input['embpicasa_options_full_size'] = '640';
 	}
-	
+
 	return $input;
 }
 
@@ -166,15 +166,15 @@ function embpicasa_options_add_defaults() {
 // http://brettterpstra.com/adding-a-tinymce-button/
 function add_embpicasa_shortcode($atts, $content = null) {
         extract(shortcode_atts(array( "id" => '' ), $atts));
-        
+
         // do not display anything if there is no "id"
 		if(empty($id)) return '';
-		
+
 		$options = get_option('embpicasa_options');
 
 		// do not display anything in loop if "Show only on single post"
 		if(!is_single() && $options['embpicasa_options_single_only'] == 'yes') return '';
-		
+
 		if(!empty($options['embpicasa_options_login']) && !empty($options['embpicasa_options_password'])) {
 			try {
 				set_include_path(implode(PATH_SEPARATOR, array(
@@ -193,8 +193,8 @@ function add_embpicasa_shortcode($atts, $content = null) {
 				Zend_Loader::loadClass('Zend_Gdata_Photos_PhotoQuery');
 
 				$client = Zend_Gdata_ClientLogin::getHttpClient($options['embpicasa_options_login'], $options['embpicasa_options_password'], Zend_Gdata_Photos::AUTH_SERVICE_NAME);
-				$service = new Zend_Gdata_Photos($client); 
-				
+				$service = new Zend_Gdata_Photos($client);
+
 				$photos = array();
 				$query = new Zend_Gdata_Photos_AlbumQuery();
 				$query->setAlbumId($id);
@@ -219,7 +219,7 @@ function add_embpicasa_shortcode($atts, $content = null) {
 					}
 					catch(Exception $e) {$results = null;}
 				}
-				
+
 
 				$plugin_template = dirname(__FILE__) . '/loop-picasa.php';
 				$theme_template = get_theme_root() . '/' . get_template() . '/loop-picasa.php';
@@ -229,11 +229,11 @@ function add_embpicasa_shortcode($atts, $content = null) {
 				include $template_path;
 				$html = ob_get_contents();
 				ob_end_clean();
-        		
+
 				return $html;
-				
+
 			} catch(Exception $ex) {
-				return '<p style="color:red">' . $ex->getMessage() . '</p>';					
+				return '<p style="color:red">' . $ex->getMessage() . '</p>';
 			}
 		} else {
 			return ''; //empty login or password
@@ -248,12 +248,12 @@ add_shortcode('embpicasa', 'add_embpicasa_shortcode');
 function embpicasa_init() {
 	if(is_admin() && current_user_can('edit_posts') && current_user_can('edit_pages') && get_user_option('rich_editing') == 'true') {
 		wp_register_style( 'jquery-style', 'http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.1/themes/smoothness/jquery-ui.css', true);
-		wp_enqueue_style( 'jquery-style' );	
+		wp_enqueue_style( 'jquery-style' );
 	}
-	
+
 	if(!is_admin()) {
 		wp_register_style( 'embpicasa-style', plugins_url('embpicasa.css', __FILE__));
-		wp_enqueue_style( 'embpicasa-style' );	
+		wp_enqueue_style( 'embpicasa-style' );
 	}
 }
 add_action( 'init', 'embpicasa_init' );
@@ -261,26 +261,26 @@ add_action( 'init', 'embpicasa_init' );
 
 add_action( 'edit_form_advanced', 'embpicasa_embed_js' );
 add_action( 'edit_page_form', 'embpicasa_embed_js' );
-function embpicasa_embed_js() {	
+function embpicasa_embed_js() {
 ?>
 <script type="text/javascript">
 	function embpicasa_dlg_open() {
 		embpicasa_dlg_close();
-		
+
 		jQuery("#embpicasa_dlg").dialog({
 			modal: true,
 			draggable: false,
 			resizable: false,
 			buttons: {'Insert': embpicasa_dlg_insert}
 		});
-		
+
 		jQuery("#embpicasa_dlg").dialog("open");
 	}
 
 	function embpicasa_dlg_insert() {
 		var album_id = jQuery("#embpicasa_dlg_content_album").val();
-		
-		var shortcode = '[embpicasa id="'+album_id+'"]';	
+
+		var shortcode = '[embpicasa id="'+album_id+'"]';
 
 		if ( typeof tinyMCE != 'undefined' && ( ed = tinyMCE.activeEditor ) && !ed.isHidden() ) {
 			ed.focus();
@@ -293,9 +293,9 @@ function embpicasa_embed_js() {
 
 		embpicasa_dlg_close();
 	}
-	
+
 	function embpicasa_dlg_close() {
-		jQuery("#embpicasa_dlg").dialog("close");
+		if(jQuery("#embpicasa_dlg:visible").size() > 0) jQuery("#embpicasa_dlg").dialog("close");
 	}
 </script>
 
@@ -327,35 +327,35 @@ if(!empty($options['embpicasa_options_login']) && !empty($options['embpicasa_opt
 		Zend_Loader::loadClass('Zend_Gdata_Photos_PhotoQuery');
 
 		$client = Zend_Gdata_ClientLogin::getHttpClient($options['embpicasa_options_login'], $options['embpicasa_options_password'], Zend_Gdata_Photos::AUTH_SERVICE_NAME);
-		$service = new Zend_Gdata_Photos($client); 
-		
+		$service = new Zend_Gdata_Photos($client);
+
 		$albums = array();
-	
+
 		$results = $service->getUserFeed();
 		while($results != null) {
 			foreach($results as $entry) {
 				$album_id = $entry->gphotoId->text;
 				$album_name = $entry->title->text;
-				
+
 				$albums[] = array(
 					'id' => $album_id,
 					'name' => $album_name
 				);
 			}
-			
+
 			try {
 				$results = $results->getNextFeed();
 			}
 			catch(Exception $e) {$results = null;}
 		}
-		
+
 		foreach($albums as $album) {
 			$opts = $opts . '<option value="' . $album['id'] . '">' . $album['name'] . '</option>';
 		}
-		
+
 	} catch(Exception $ex) {
 		$success = false;
-		$msg = $ex->getMessage();		
+		$msg = $ex->getMessage();
 	}
 }
 ?>
@@ -370,7 +370,7 @@ if(!empty($options['embpicasa_options_login']) && !empty($options['embpicasa_opt
 					</label>
 				</p>
 			<?php else:?>
-				<div style="padding:1em;" class="ui-state-error ui-corner-all"> 
+				<div style="padding:1em;" class="ui-state-error ui-corner-all">
 					<p><strong>ERROR</strong><br /><?php echo $msg?></p>
 				</div>
 			<?php endif;?>
