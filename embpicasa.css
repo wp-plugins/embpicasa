@@ -14,9 +14,9 @@
 }
 
 
-.embpicasa li {margin:5px;}
+.embpicasa li {margin:5px;float:left;}
 .embpicasa li a img {
-	border:3px solid #fff;	
+	border:3px solid #fff;
 	-moz-box-shadow: 0 0 5px #ccc;
 	-webkit-box-shadow: 0 0 5px #ccc;
 	box-shadow: 0 0 5px #ccc;
