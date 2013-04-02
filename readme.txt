@@ -48,6 +48,37 @@ Just install something like [lightbox](http://wordpress.org/extend/plugins/light
 
 Just copy `loop-picasa.php` file into your template.
 
+= How to paginate result =
+
+Just copy `loop-picasa.php` file into your template.
+
+And change it to something like this:
+
+`<p>
+<?php
+$total = count($photos); // number of images
+$per_page = 6; // count of images to show per page
+$current = isset($_GET['picasa_page']) ? max(1, intval($_GET['picasa_page'])) : 1; // current page number
+
+// render pager http://codex.wordpress.org/Function_Reference/paginate_links
+echo paginate_links( array(
+	'format' => add_query_arg('picasa_page', '%#%'),
+	'current' => $current,
+	'total' => round($total / $per_page)
+) );
+?>
+</p>
+
+<ul class="embpicasa">
+<?php for($i = $current; $i < $current + $per_page; $i++): $photo = $photos[$i];?>
+	<li>
+		<a title="<?php echo $photo['title']?>" rel="lightbox[<?php echo $id?>]" target="_blank" href="<?php echo $photo['fullsize']?>">
+			<img src="<?php echo $photo['thumbnail']?>" alt="<?php echo $photo['title']?>" />
+		</a>
+	</li>
+<?php endfor;?>
+</ul>`
+
 == Screenshots ==
 
 1. Plugin configuration page.
