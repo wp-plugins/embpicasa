@@ -4,7 +4,7 @@ Plugin Name: Embed picasa album
 Plugin URI: http://wordpress.org/
 Description: Embed picasa album into post or page.
 Author: Marchenko Alexandr
-Version: 1.0.5
+Version: 1.0.6
 Author URI: http://mac-blog.org.ua/
 */
 
@@ -247,8 +247,7 @@ add_shortcode('embpicasa', 'add_embpicasa_shortcode');
 // add jquery ui styles
 function embpicasa_init() {
 	if(is_admin() && current_user_can('edit_posts') && current_user_can('edit_pages') && get_user_option('rich_editing') == 'true') {
-		wp_register_style( 'jquery-style', 'http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.1/themes/smoothness/jquery-ui.css', true);
-		wp_enqueue_style( 'jquery-style' );
+		wp_enqueue_style('wp-jquery-ui-dialog');
 	}
 
 	if(!is_admin()) {
@@ -268,10 +267,15 @@ function embpicasa_embed_js() {
 		embpicasa_dlg_close();
 
 		jQuery("#embpicasa_dlg").dialog({
+			dialogClass: 'wp-dialog',
 			modal: true,
 			draggable: false,
 			resizable: false,
-			buttons: {'Insert': embpicasa_dlg_insert}
+			closeOnEscape: true,
+			buttons: {'Insert': embpicasa_dlg_insert},
+			create:function () {
+				jQuery(this).closest(".ui-dialog").find(".ui-button").addClass("button");
+			}
 		});
 
 		jQuery("#embpicasa_dlg").dialog("open");
@@ -361,13 +365,13 @@ if(!empty($options['embpicasa_options_login']) && !empty($options['embpicasa_opt
 ?>
 <div class="hidden">
 	<div id="embpicasa_dlg" title="Picasa">
-		<div class="embpicasa_dlg_content">
+		<div class="embpicasa_dlg_content" style="padding:0 1em">
 			<?php if($success):?>
 				<p>
-					<label>
-						Select album:
-						<select id="embpicasa_dlg_content_album" style="width:98%"><?php echo $opts;?></select>
-					</label>
+					<label>Select album:</label>
+				</p>
+				<p>
+					<select id="embpicasa_dlg_content_album" style="width:100%"><?php echo $opts;?></select>
 				</p>
 			<?php else:?>
 				<div style="padding:1em;" class="ui-state-error ui-corner-all">

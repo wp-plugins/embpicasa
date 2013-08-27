@@ -2,7 +2,7 @@
 Contributors: marchenko.alexandr
 Tags: picasa
 Requires at least: 3.3.1
-Tested up to: 3.5.1
+Tested up to: 3.6.0
 Stable tag: trunk
 
 Allow insert picasa album into posts and pages via short code.
@@ -106,3 +106,6 @@ Fixed bug in wp 3.5.
 
 = 1.0.5 =
 Float left added for list items default styles by user request.
+
+= 1.0.6 =
+Fixed bug in wp 3.6 when jQuery UI dialog was displayed under overlay.
