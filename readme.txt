@@ -115,3 +115,6 @@ Wordpress 3.9 fix
 
 = 1.2.0 =
 Moving to atom feeds instead of api which now is unavailable.
+
+= 1.2.1 =
+Allow not gmail accounts
