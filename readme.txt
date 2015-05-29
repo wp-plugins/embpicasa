@@ -2,7 +2,7 @@
 Contributors: marchenko.alexandr
 Tags: picasa
 Requires at least: 3.3.1
-Tested up to: 3.9.0
+Tested up to: 4.2.2
 Stable tag: trunk
 
 Allow insert picasa album into posts and pages via short code.
@@ -112,3 +112,6 @@ Fixed bug in wp 3.6 when jQuery UI dialog was displayed under overlay.
 
 = 1.1.0 =
 Wordpress 3.9 fix
+
+= 1.2.0 =
+Moving to atom feeds instead of api which now is unavailable.

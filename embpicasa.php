@@ -4,7 +4,7 @@ Plugin Name: Embed picasa album
 Plugin URI: http://wordpress.org/
 Description: Embed picasa album into post or page.
 Author: Marchenko Alexandr
-Version: 1.1.0
+Version: 1.2.0
 Author URI: http://mac-blog.org.ua/
 */
 
@@ -177,7 +177,7 @@ function add_embpicasa_shortcode($atts, $content = null) {
 
 		if(!empty($options['embpicasa_options_login']) && !empty($options['embpicasa_options_password'])) {
 			try {
-				set_include_path(implode(PATH_SEPARATOR, array(
+				/*set_include_path(implode(PATH_SEPARATOR, array(
 					realpath(dirname(__FILE__) . '/library'),
 					get_include_path(),
 				)));
@@ -218,8 +218,29 @@ function add_embpicasa_shortcode($atts, $content = null) {
 						$results = $results->getNextFeed();
 					}
 					catch(Exception $e) {$results = null;}
-				}
+				}*/
 
+                $mail = $options['embpicasa_options_login'];
+                $username = substr($mail, 0, strpos($mail, '@'));
+
+                $thumb_suffix = $options['embpicasa_options_thumb_crop'] == 'no' ? 'u' : 'c';
+                $full_suffix = $options['embpicasa_options_full_crop'] == 'no' ? 'u' : 'c';
+                $thumbsize = $options['embpicasa_options_thumb_size'] . $thumb_suffix;
+                $imgmax = $options['embpicasa_options_full_size'] . $full_suffix;
+
+                $album_url = 'https://picasaweb.google.com/data/feed/api/user/' . $username . '/albumid/' . $id . '?kind=photo&thumbsize=' . $thumbsize . '&imgmax=' . $imgmax;
+                $xml = file_get_contents($album_url);
+                $feed = new SimpleXMLElement($xml);
+                $photos = array();
+                foreach($feed->entry as $entry) {
+                    $group = $entry->children('http://search.yahoo.com/mrss/')->group;
+
+                    $photos[] = array(
+                        'thumbnail' => strval($group->thumbnail->attributes()->url),
+                        'fullsize' => strval($group->content->attributes()->url),
+                        'title' => strval($group->title),
+                    );
+                }
 
 				$plugin_template = dirname(__FILE__) . '/loop-picasa.php';
 				$theme_template = get_theme_root() . '/' . get_template() . '/loop-picasa.php';
@@ -316,7 +337,7 @@ $opts = '';
 
 if(!empty($options['embpicasa_options_login']) && !empty($options['embpicasa_options_password'])) {
 	try {
-		set_include_path(implode(PATH_SEPARATOR, array(
+		/*set_include_path(implode(PATH_SEPARATOR, array(
 			realpath(dirname(__FILE__) . '/library'),
 			get_include_path(),
 		)));
@@ -352,7 +373,21 @@ if(!empty($options['embpicasa_options_login']) && !empty($options['embpicasa_opt
 				$results = $results->getNextFeed();
 			}
 			catch(Exception $e) {$results = null;}
-		}
+		}*/
+
+        $mail = $options['embpicasa_options_login'];
+        $username = substr($mail, 0, strpos($mail, '@'));
+
+        $feed = new SimpleXMLElement(file_get_contents('https://picasaweb.google.com/data/feed/api/user/' . $username . '?kind=album'));
+        $albums = array();
+        foreach($feed->entry as $entry) {
+            $photoElements = $entry->children('http://schemas.google.com/photos/2007');
+
+            $albums[] = array(
+                'id' => strval($photoElements->id),
+                'name' => strval($photoElements->name)
+            );
+        }
 
 		foreach($albums as $album) {
 			$opts = $opts . '<option value="' . $album['id'] . '">' . $album['name'] . '</option>';
