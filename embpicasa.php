@@ -4,7 +4,7 @@ Plugin Name: Embed picasa album
 Plugin URI: http://wordpress.org/
 Description: Embed picasa album into post or page.
 Author: Marchenko Alexandr
-Version: 1.2.1
+Version: 1.2.2
 Author URI: http://mac-blog.org.ua/
 */
 
@@ -243,7 +243,7 @@ function add_embpicasa_shortcode($atts, $content = null) {
                 }
 
 				$plugin_template = dirname(__FILE__) . '/loop-picasa.php';
-				$theme_template = get_theme_root() . '/' . get_template() . '/loop-picasa.php';
+				$theme_template = get_theme_root() . '/' . get_stylesheet() . '/loop-picasa.php';
         		$template_path = file_exists($theme_template) ? $theme_template : $plugin_template;
 
 				ob_start();

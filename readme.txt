@@ -2,7 +2,7 @@
 Contributors: marchenko.alexandr
 Tags: picasa
 Requires at least: 3.3.1
-Tested up to: 4.2.2
+Tested up to: 4.3.0
 Stable tag: trunk
 
 Allow insert picasa album into posts and pages via short code.
@@ -118,3 +118,6 @@ Moving to atom feeds instead of api which now is unavailable.
 
 = 1.2.1 =
 Allow not gmail accounts
+
+= 1.2.2 =
+Fix for child themes
